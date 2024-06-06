@@ -1,0 +1,1 @@
+export { PercentIcon } from './PercentIcon';

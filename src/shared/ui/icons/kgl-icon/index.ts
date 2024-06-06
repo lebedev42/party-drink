@@ -1,0 +1,1 @@
+export { KglIcon } from './KglIcon';

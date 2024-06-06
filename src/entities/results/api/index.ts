@@ -1,0 +1,1 @@
+export { useResultsQuery } from './useResultsQuery';

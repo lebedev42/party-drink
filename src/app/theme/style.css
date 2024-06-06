@@ -1,0 +1,38 @@
+@font-face {
+  font-family: 'Euclid';
+  src: url('../../../public/fonts/Regular.ttf') format('truetype');
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: 'Euclid';
+  src: url('../../../public/fonts/Medium.ttf') format('truetype');
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: 'Euclid';
+  src: url('../../../public/fonts/Light.ttf') format('truetype');
+  font-weight: 300;
+}
+
+@font-face {
+  font-family: 'Euclid';
+  src: url('../../../public/fonts/Bold.ttf') format('truetype');
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: 'Euclid';
+  src: url('../../../public/fonts/Italic.ttf') format('truetype');
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Euclid';
+  src: url('../../../public/fonts/Bold-Italic.ttf') format('truetype');
+  font-weight: bold;
+  font-style: italic;
+}
+
+@import './reset.css';
