@@ -149,7 +149,7 @@ class GameScene extends Phaser.Scene {
 
     // this.pointsText.text = cratesCount;
 
-    if (cratesCount >= 15) {
+    if (cratesCount >= 30) {
       setTimeout(() => {
         EventBus.emit('game-over', true);
       }, 800);
@@ -159,14 +159,14 @@ class GameScene extends Phaser.Scene {
   checkCollision(e, b1, b2) {
     if (b1.isCrate && !b1.hit) {
       b1.hit = true;
-      // b1.isStatic = true;
+      b1.isStatic = true;
 
       if (b1.gameObject.texture.key === this.lastCrate?.texture?.key) {
         this.nextCrate();
         this.updatePoints();
       } else {
         this.crateGroup.getChildren().forEach((item) => {
-          // item.body.isStatic = false;
+          item.body.isStatic = false;
         });
 
         this.actionCamera.centerOn(
@@ -181,7 +181,7 @@ class GameScene extends Phaser.Scene {
     }
     if (b2.isCrate && !b2.hit) {
       b2.hit = true;
-      // b2.isStatic = true;
+      b2.isStatic = true;
 
       if (
         !this.lastCrate?.texture?.key ||
@@ -191,7 +191,7 @@ class GameScene extends Phaser.Scene {
         this.updatePoints();
       } else {
         this.crateGroup.getChildren().forEach((item) => {
-          // item.body.isStatic = false;
+          item.body.isStatic = false;
         });
 
         this.actionCamera.centerOn(
