@@ -166,7 +166,7 @@ class GameScene extends Phaser.Scene {
         this.updatePoints();
       } else {
         this.crateGroup.getChildren().forEach((item) => {
-          item.body.isStatic = false;
+          // item.body.isStatic = false;
         });
 
         this.actionCamera.centerOn(
@@ -191,7 +191,7 @@ class GameScene extends Phaser.Scene {
         this.updatePoints();
       } else {
         this.crateGroup.getChildren().forEach((item) => {
-          item.body.isStatic = false;
+          // item.body.isStatic = false;
         });
 
         this.actionCamera.centerOn(
