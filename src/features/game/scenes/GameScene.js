@@ -159,7 +159,7 @@ class GameScene extends Phaser.Scene {
   checkCollision(e, b1, b2) {
     if (b1.isCrate && !b1.hit) {
       b1.hit = true;
-      b1.isStatic = true;
+      // b1.isStatic = true;
 
       if (b1.gameObject.texture.key === this.lastCrate?.texture?.key) {
         this.nextCrate();
@@ -181,7 +181,7 @@ class GameScene extends Phaser.Scene {
     }
     if (b2.isCrate && !b2.hit) {
       b2.hit = true;
-      b2.isStatic = true;
+      // b2.isStatic = true;
 
       if (
         !this.lastCrate?.texture?.key ||
