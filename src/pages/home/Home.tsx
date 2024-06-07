@@ -26,13 +26,11 @@ const Home = () => {
 
     const parsed = queryString.parse(location.search);
 
-    if (parsed?.userid) {
-      const userid = Array.isArray(parsed.userid)
-        ? parsed.userid[0]
-        : parsed.userid;
+    if (parsed?.user) {
+      const user = Array.isArray(parsed.user) ? parsed.user[0] : parsed.user;
 
-      if (userid) {
-        setUser(userid);
+      if (user) {
+        setUser(user);
       }
     }
   }, []);
