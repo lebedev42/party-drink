@@ -21,7 +21,7 @@ export const Container = styled.div`
   justify-content: space-between;
   position: relative;
 
-  background-size: cover;
+  background-size: contain;
   background-position: center center;
   background-repeat: no-repeat;
   background-image: url('/welcome-bg.png');
@@ -29,13 +29,13 @@ export const Container = styled.div`
   width: 100%;
   height: 100vh;
 
-  padding: 80px 30px 140px;
+  padding: 80px 30px 100px;
 
   @media (max-width: 380px) {
-    padding: 50px 20px 100px;
+    padding: 50px 20px 80px;
   }
   @media (max-width: 320px) {
-    padding: 40px 10px 80px;
+    padding: 40px 10px 50px;
   }
 `;
 
