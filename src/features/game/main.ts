@@ -5,7 +5,7 @@ import GameScene from './scenes/GameScene';
 import options from './constants/options';
 
 const config = {
-  type: Phaser.AUTO,
+  type: Phaser.CANVAS,
   parent: 'game-container',
   // width: 1170,
   // height: 2532,
