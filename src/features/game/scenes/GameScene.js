@@ -71,7 +71,7 @@ class GameScene extends Phaser.Scene {
   }
 
   addSky() {
-    this.sky = this.add.image(0, 0, 'sky');
+    this.sky = this.add.sprite(0, 0, 'sky');
     this.sky.displayWidth = this.sys.game.config.width;
     this.sky.displayOriginX = 0;
   }

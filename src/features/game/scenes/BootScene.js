@@ -7,8 +7,8 @@ class BootScene extends Scene {
 
   preload() {
     this.load.json('assets', './assets/assets.json');
-    this.load.image('ground', 'assets/ground.png');
     this.load.image('sky', 'assets/sky.png');
+    this.load.image('ground', 'assets/ground.png');
     this.load.image('crate', 'assets/crate.png');
     this.load.image('table', 'assets/table.png');
     this.load.image('item-1', 'assets/item-1.png');

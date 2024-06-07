@@ -8,7 +8,7 @@ class LoadingScene extends Scene {
   preload() {
     this.loadAssets(this.cache.json.get('assets'));
 
-    this.load.once('complete', () => {
+    this.load.on('complete', () => {
       this.scene.start('game');
     });
   }
