@@ -11,8 +11,8 @@ const config = {
   // height: 2532,
   width: 750,
   height: 1334,
-  backgroundColor: '#FFC46C',
-  transparent: true,
+  // backgroundColor: '#FFC46C',
+  // transparent: true,
   scene: [BootScene, LoadingScene, GameScene],
 };
 
