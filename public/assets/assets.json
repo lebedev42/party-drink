@@ -1,31 +1,12 @@
 {
-  "knife": "knife.png",
-  "target": "target.png",
-  "wing": "wing.png",
-  "leg": "leg.png",
-  "onion": "onion.png",
-  "tomato": "tomato.png",
-  "zucchini": "zucchini.png",
-  "steak": "steak.png",
-  "tofu": "tofu.png",
-  "mushroom": "mushroom.png",
-  "sausage": "sausage.png",
-
-  "attemt": "attemt.png",
-
-  "life": "life.png",
-
-  "flame1": "flame1.png",
-  "flame2": "flame2.png",
-  "flame3": "flame3.png",
-  "flame4": "flame4.png",
-
-  "star1": "star1.png",
-  "star2": "star2.png",
-  "star3": "star3.png",
-  "star4": "star4.png",
-  "star5": "star5.png",
-  "star6": "star6.png",
-  "star7": "star7.png",
-  "star8": "star8.png"
+  "ground": "ground.png",
+  "sky": "sky.png",
+  "crate": "crate.png",
+  "item-1": "item-1.png",
+  "item-2": "item-2.png",
+  "item-3": "item-3.png",
+  "item-4": "item-4.png",
+  "item-5": "item-5.png",
+  "item-6": "item-6.png",
+  "table": "table.png"
 }

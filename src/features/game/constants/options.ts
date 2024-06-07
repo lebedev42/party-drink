@@ -1,7 +1,9 @@
 const options = {
-  rotationSpeed: 3,
-  throwSpeed: 150,
-  minAngle: 10,
+  timeLimit: 30,
+  gravity: 1,
+  crateHeight: 700,
+  crateRange: [-300, 300],
+  crateSpeed: 800,
 };
 
 export default options;

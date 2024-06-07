@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import BootScene from './scenes/BootScene';
 import LoadingScene from './scenes/LoadingScene';
 import GameScene from './scenes/GameScene';
+import options from './constants/options';
 
 const config = {
   type: Phaser.AUTO,
@@ -24,6 +25,15 @@ const StartGame = (parent: any, size: any) => {
     antialias: true,
     parent,
     mipmapFilter: 'LINEAR_MIPMAP_LINEAR',
+    physics: {
+      default: 'matter',
+      matter: {
+        // gravity: {
+        //   y: options.gravity,
+        //   x: 0,
+        // },
+      },
+    },
   };
 
   return new Phaser.Game(gameConfig);

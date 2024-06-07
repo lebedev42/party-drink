@@ -45,14 +45,14 @@ module.exports = {
       },
       { test: /\.css$/, use: ['style-loader', 'css-loader'] },
       {
-        test: /\.(png|jpe?g|gif|swf|svg|json)$/i,
+        test: /\.(png|jpe?g|gif|swf|svg|json|fnt)$/i,
         loader: 'file-loader',
         options: {
           name: 'assets/[name][ext]',
         },
       },
       {
-        test: /\.(woff|woff2|ttf|eot|otf)$/,
+        test: /\.(woff|woff2|ttf|eot|otf|png|fnt)$/,
         loader: 'file-loader',
         options: {
           name: 'fonts/[name]-[hash:6].[ext]',

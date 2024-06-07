@@ -3,414 +3,233 @@ import options from '../constants/options';
 import { EventBus } from '../EventBus';
 import sample from 'lodash.sample';
 
-const levels = [
+const items = [
   {
     id: 1,
-    target: 'wing',
-    rotationSpeed: 3,
+    target: 'item-1',
   },
   {
     id: 2,
-    target: 'leg',
-    rotationSpeed: 3,
+    target: 'item-2',
   },
   {
     id: 3,
-    target: 'onion',
-    rotationSpeed: 3,
+    target: 'item-3',
   },
   {
     id: 4,
-    target: 'tomato',
-    rotationSpeed: 3,
+    target: 'item-4',
   },
   {
     id: 5,
-    target: 'zucchini',
-    rotationSpeed: 3,
+    target: 'item-5',
   },
   {
     id: 6,
-    target: 'steak',
-    rotationSpeed: 3,
-  },
-  {
-    id: 7,
-    target: 'tofu',
-    rotationSpeed: 3,
-  },
-  {
-    id: 8,
-    target: 'mushroom',
-    rotationSpeed: 3,
+    target: 'item-6',
   },
 ];
 
-const getLevelConfig = (level, previousLevelId) => {
-  const randomLevel = sample(levels);
+const getNextItem = (level, previousItemId) => {
+  const randomItem = sample(items);
 
-  if (previousLevelId && randomLevel.id === previousLevelId) {
-    return getLevelConfig(level, previousLevelId);
+  if (previousItemId && randomItem.id === previousItemId) {
+    return getNextItem(level, previousItemId);
   }
 
   const config = {
-    id: randomLevel.id,
-    target: randomLevel.target,
-    rotationSpeed: randomLevel.rotationSpeed,
+    id: randomItem.id,
+    target: randomItem.target,
   };
-
-  if (level <= 2) {
-    // 1-2 уровень — 6 шампура
-    config.attemts = 6;
-  } else if (level > 2 && level <= 4) {
-    // 3-4 уровень — 8 шампуров
-    config.attemts = 8;
-  } else if (level > 4 && level <= 7) {
-    // 5-7 уровень — 10 шампуров (уже сложно)
-    config.attemts = 10;
-  } else if (level > 7 && level <= 9) {
-    // 8-9 — 12 шампуров
-    config.attemts = 12;
-  } else {
-    // 10-11 — 14 шампуров. максимальное далее на всех уровнях только 14
-    config.attemts = 14;
-  }
 
   return config;
 };
 
-class GameScene extends Scene {
+class GameScene extends Phaser.Scene {
   constructor() {
     super('game');
+    this.item = null;
 
-    this.points = 0;
-    this.startTime = 0;
+    this.lastCrate = null;
   }
 
   create(params) {
-    this.canThrow = true;
+    this.item = getNextItem(this.level, 1);
 
-    this.knifeGroup = this.add.group();
-    this.knife = this.add.sprite(
-      this.sys.game.config.width / 2,
-      (this.sys.game.config.height / 5) * 4,
-      'knife',
-    );
-    this.knife.depth = 1;
+    this.matter.world.update30Hz();
+    this.canDrop = true;
+    this.timer = 0;
+    this.timerEvent = null;
+    this.addSky();
+    this.addGround();
+    this.addMovingCrate(params);
 
-    this.hit = 0;
-
-    this.level = params.level || 1;
-    this.levelConfig = getLevelConfig(this.level, params.levelId);
-
-    this.rotationSpeed = this.levelConfig.rotationSpeed;
-
-    this.target = this.add.sprite(
-      this.sys.game.config.width / 2,
-      this.sys.game.config.height / 3,
-      this.levelConfig.target,
-    );
-    this.target.depth = 1;
-
-    this.input.on('pointerdown', this.throwKnife, this);
-
-    this.attemtsGroup = this.add.group();
-
-    for (let i = 0; i < this.levelConfig.attemts; i++) {
-      const attemt = this.add.sprite(0, 0, 'attemt').setOrigin(1, 1);
-
-      this.attemtsGroup.add(attemt);
-    }
-
-    this.lifesGroup = this.add.group();
-
-    for (let i = 0; i < this.sys.game.lives; i++) {
-      const life = this.add.sprite(0, 0, 'life');
-
-      this.lifesGroup.add(life);
-    }
-
-    this.zone = this.add.zone(
-      0,
-      0,
-      this.sys.game.config.width,
-      this.sys.game.config.height,
-    );
-    this.zone.setOrigin(0, 0);
-
-    const childrenAttemts = this.attemtsGroup.getChildren();
-
-    for (let i = 0; i < childrenAttemts.length; i++) {
-      let baseOffset = -20;
-      let offsetX = 0;
-
-      if (i === 0) {
-        offsetX = baseOffset;
-      } else {
-        offsetX = -i * 20 + baseOffset;
-      }
-
-      Phaser.Display.Align.In.TopRight(
-        childrenAttemts[i],
-        this.zone,
-        offsetX,
-        -20,
-      );
-    }
-
-    const childrenLifes = this.lifesGroup.getChildren();
-
-    for (let i = 0; i < childrenLifes.length; i++) {
-      let baseOffset = -20;
-      let offsetX = 0;
-
-      if (i === 0) {
-        offsetX = baseOffset;
-      } else {
-        offsetX = -i * 50 + baseOffset;
-      }
-
-      Phaser.Display.Align.In.TopLeft(
-        childrenLifes[i],
-        this.zone,
-        offsetX,
-        -20,
-      );
-    }
-
-    this.pointsText = this.add.text(100, 100, this.points, {
-      fontFamily: 'Euclid',
-      fontSize: '40px',
-      fill: '#000',
-    });
-
-    Phaser.Display.Align.In.TopCenter(this.pointsText, this.zone, 0, -20);
-
-    this.anims.create({
-      key: 'fire',
-      frames: [
-        { key: 'flame1' },
-        { key: 'flame2' },
-        { key: 'flame3' },
-        { key: 'flame4' },
-      ],
-      frameRate: 8,
-      repeat: -1,
-    });
-
-    this.flame = this.add.sprite(0, 0, 'flame1');
-    this.flame.depth = 0;
-    this.flame.setOrigin(0.5, 1);
-    this.flame.scale = 0.5;
-
-    Phaser.Display.Align.In.BottomCenter(this.flame, this.zone);
-
-    this.flame.play('fire');
-
-    this.anims.create({
-      key: 'bright',
-      frames: [
-        { key: 'star1' },
-        { key: 'star2' },
-        { key: 'star3' },
-        { key: 'star4' },
-        { key: 'star5' },
-        { key: 'star6' },
-        { key: 'star7' },
-        { key: 'star8' },
-      ],
-      frameRate: 12,
-      repeat: -1,
-    });
-
-    this.star = this.add.sprite(0, 0, 'star1');
-    this.star.depth = 2;
-    this.star.setOrigin(0.5, 1);
-
-    Phaser.Display.Align.In.TopRight(this.star, this.knife, 35, 0);
-
-    this.star.play('bright');
-
-    this.startTime = this.scene.scene.time.now;
-    EventBus.emit('game-started');
+    this.crateGroup = this.add.group();
+    this.matter.world.on('collisionstart', this.checkCollision, this);
+    this.setCameras();
+    this.input.on('pointerdown', this.dropCrate, this);
   }
 
-  update() {
-    this.target.angle += this.rotationSpeed;
-
-    const children = this.knifeGroup.getChildren();
-
-    for (let i = 0; i < children.length; i++) {
-      children[i].angle += this.rotationSpeed;
-
-      const radians = Phaser.Math.DegToRad(children[i].angle + 90);
-
-      children[i].x =
-        this.target.x + (this.target.width / 2) * Math.cos(radians);
-      children[i].y =
-        this.target.y + (this.target.width / 2) * Math.sin(radians);
-    }
+  addSky() {
+    this.sky = this.add.image(0, 0, 'sky');
+    this.sky.displayWidth = this.sys.game.config.width;
+    this.sky.displayOriginX = 0;
   }
 
-  throwKnife() {
-    if (!this.canThrow) {
-      return;
-    }
+  setCameras() {
+    this.actionCamera = this.cameras.add(
+      0,
+      0,
+      this.game.config.width,
+      this.game.config.height,
+    );
 
-    this.star.stop('bright');
-    this.star.setVisible(false);
+    this.cameras.main.setBounds(0, 0, this.sys.game.config.width, 0);
+    this.cameras.main.startFollow(this.actionCamera, true);
+    this.cameras.main.ignore([this.ground, this.movingCrate]);
+  }
 
-    this.canThrow = false;
+  addGround() {
+    this.ground = this.matter.add.sprite(
+      this.game.config.width / 2,
+      this.game.config.height,
+      'table',
+    );
+    this.ground.setBody({
+      type: 'rectangle',
+      width: this.ground.displayWidth,
+      height: this.ground.displayHeight * 2,
+    });
+    this.ground.setOrigin(0.5, 1);
+    this.ground.setStatic(true);
+  }
+
+  addMovingCrate(params) {
+    this.movingCrate = this.add.sprite(
+      this.game.config.width / 2 - options.crateRange[0],
+      this.ground.y - this.game.config.height,
+      this.item.target,
+    );
+    this.movingCrate.setOrigin(0.5, 0.5);
+
     this.tweens.add({
-      targets: [this.knife],
-      y: this.target.y + this.target.width / 2,
-      duration: options.throwSpeed,
-      callbackScope: this,
-      onComplete: this.onCompleteThrowKnife,
+      targets: this.movingCrate,
+      x: this.game.config.width / 2 - options.crateRange[1],
+      duration: options.crateSpeed,
+      yoyo: true,
+      repeat: -1,
     });
   }
 
-  updateRotationSpeed() {
-    const childrenAttemts = this.attemtsGroup.getChildren();
+  checkCollision(e, b1, b2) {
+    if (b1.isCrate && !b1.hit) {
+      b1.hit = true;
+      b1.isStatic = true;
 
-    if (
-      this.levelConfig.target === 'wing' ||
-      this.levelConfig.target === 'leg'
-    ) {
-      // единая скорость, средняя, объект двигается в одну сторону
-
-      this.rotationSpeed = 3;
-    }
-
-    if (
-      this.levelConfig.target === 'onion' ||
-      this.levelConfig.target === 'zucchini'
-    ) {
-      // скорость меняется один раз от средней к быстрой при половине воткнутых шампуров.
-      // объект двигается в одну сторону
-
-      if (this.levelConfig.attemts / 2 > childrenAttemts.length) {
-        this.rotationSpeed = 4;
+      if (b1.gameObject.texture.key === this.lastCrate?.texture?.key) {
+        this.nextCrate();
       } else {
-        this.rotationSpeed = 3;
+        this.crateGroup.getChildren().forEach((item) => {
+          item.body.isStatic = false;
+        });
       }
     }
+    if (b2.isCrate && !b2.hit) {
+      b2.hit = true;
+      b2.isStatic = true;
 
-    if (
-      this.levelConfig.target === 'steak' ||
-      this.levelConfig.target === 'tofu'
-    ) {
-      // единая скорость средняя объект меняет сторону движения при половине воткнутых шампурах
-
-      this.rotationSpeed = 3;
-
-      if (this.levelConfig.attemts / 2 > childrenAttemts.length) {
-        this.rotationSpeed = this.rotationSpeed * -1;
-      }
-    }
-
-    if (
-      this.levelConfig.target === 'mushroom' ||
-      this.levelConfig.target === 'tomato'
-    ) {
-      // скорость чередуется: средняя — быстрая — средняя с каждым воткнутым шампуром.
-      // Меняет направление вращения при половине воткнутых шампурах
-
-      const currentSpeed =
-        this.rotationSpeed < 0 ? this.rotationSpeed * -1 : this.rotationSpeed;
-
-      if (currentSpeed === 3) {
-        this.rotationSpeed = 4;
+      if (
+        !this.lastCrate?.texture?.key ||
+        b1.gameObject.texture.key === this.lastCrate?.texture?.key
+      ) {
+        this.nextCrate();
       } else {
-        this.rotationSpeed = 3;
-      }
+        this.crateGroup.getChildren().forEach((item) => {
+          item.body.isStatic = false;
 
-      if (this.levelConfig.attemts / 2 > childrenAttemts.length) {
-        this.rotationSpeed = this.rotationSpeed * -1;
+          this.actionCamera.centerOn(
+            this.game.config.width / 2,
+            this.game.config.height / 2,
+          );
+        });
       }
     }
   }
 
-  onCompleteThrowKnife() {
-    let legalHit = true;
-    const children = this.knifeGroup.getChildren();
+  dropCrate() {
+    if (this.canDrop) {
+      this.addTimer();
+      this.canDrop = false;
+      this.movingCrate.visible = false;
 
-    for (let i = 0; i < children.length; i++) {
-      const isSameAngle =
-        Math.abs(
-          Phaser.Math.Angle.ShortestBetween(
-            this.target.angle,
-            children[i].impactAngle,
-          ),
-        ) < options.minAngle;
-
-      if (isSameAngle) {
-        legalHit = false;
-        break;
-      }
+      this.addFallingCrate();
     }
-
-    const childrenAttemts = this.attemtsGroup.getChildren();
-
-    this.attemtsGroup.remove(
-      childrenAttemts[childrenAttemts.length - 1],
-      true,
-      true,
+  }
+  update() {
+    this.crateGroup.getChildren().forEach(function (crate) {
+      if (crate.y > this.game.config.height + crate.displayHeight) {
+        if (!crate.body.hit) {
+          this.nextCrate();
+        }
+        crate.destroy();
+      }
+    }, this);
+  }
+  addTimer() {
+    if (this.timerEvent == null) {
+      this.timerEvent = this.time.addEvent({
+        delay: 1000,
+        callback: this.tick,
+        callbackScope: this,
+        loop: true,
+      });
+    }
+  }
+  addFallingCrate() {
+    let fallingCrate = this.matter.add.sprite(
+      this.movingCrate.x,
+      this.movingCrate.y,
+      this.item.target,
     );
 
-    this.updateRotationSpeed();
+    fallingCrate.body.isCrate = true;
+    fallingCrate.body.hit = false;
+    this.crateGroup.add(fallingCrate);
+    this.cameras.main.ignore(fallingCrate);
+  }
+  nextCrate() {
+    this.zoomCamera();
+    this.canDrop = true;
+    this.movingCrate.visible = true;
 
-    if (legalHit) {
-      this.canThrow = true;
+    const lastCrate =
+      this.crateGroup.getChildren()[this.crateGroup.getChildren().length - 1];
 
-      const knife = this.add.sprite(this.knife.x, this.knife.y, 'knife');
+    this.item = getNextItem(this.level, this.item.id);
+    this.movingCrate.setTexture(this.item.target);
+    this.movingCrate.y = lastCrate.y - this.game.config.height / 2;
+  }
+  zoomCamera() {
+    const lastCrate =
+      this.crateGroup.getChildren()[this.crateGroup.getChildren().length - 1];
 
-      this.star.setVisible(true);
-      this.star.play('bright');
+    this.lastCrate = lastCrate;
 
-      knife.impactAngle = this.target.angle;
+    if (lastCrate.y < this.game.config.height / 2) {
+      this.actionCamera.centerOn(this.game.config.width / 2, lastCrate.y);
+    }
+  }
 
-      this.knifeGroup.add(knife);
-      this.knife.y = (this.sys.game.config.height / 5) * 4;
+  tick() {
+    this.timer++;
+  }
 
-      this.hit += 1;
-
-      this.points += this.level * 2;
-
-      this.pointsText.text = this.points;
-
-      if (this.hit === this.levelConfig.attemts) {
-        this.scene.start('game', {
-          level: this.level + 1,
-          levelId: this.levelConfig.id,
-        });
-
-        const endTime = this.scene.scene.time.now;
-        const levelTime = endTime - this.startTime;
-
-        EventBus.emit('level-passed', this.level, levelTime.toFixed(0));
-      }
+  removeCrate() {
+    if (this.crateGroup.getChildren().length > 0) {
+      this.crateGroup.getFirstAlive().destroy();
     } else {
-      this.tweens.add({
-        targets: [this.knife],
-        y: this.sys.game.config.height + this.knife.height,
-        rotation: 5,
-        duration: options.throwSpeed * 4,
-        callbackScope: this,
-        onComplete: () => {
-          this.scene.start('game', {
-            level: this.level,
-            levelId: this.levelConfig.id,
-          });
-          this.sys.game.lives -= 1;
-
-          EventBus.emit('life-lost', this.sys.game.lives);
-
-          if (this.sys.game.lives <= 0) {
-            EventBus.emit('game-over', this);
-          }
-        },
-      });
+      this.removeEvent.remove();
+      this.scene.start('game');
     }
   }
 }
