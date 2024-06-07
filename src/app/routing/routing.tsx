@@ -1,7 +1,6 @@
 import { lazy } from 'react';
 
 const Home = lazy(() => import('../../pages/home'));
-const Results = lazy(() => import('../../pages/results'));
 
 export const routing = [
   {
@@ -9,11 +8,5 @@ export const routing = [
     path: '/',
     title: 'Home',
     component: <Home />,
-  },
-  {
-    key: 'results',
-    path: '/results',
-    title: 'Results',
-    component: <Results />,
   },
 ];

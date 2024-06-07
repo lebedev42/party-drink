@@ -7,26 +7,37 @@ const items = [
   {
     id: 1,
     target: 'item-1',
+    offset: 10,
   },
   {
     id: 2,
     target: 'item-2',
+    offset: 20,
   },
   {
     id: 3,
     target: 'item-3',
+    offset: 10,
   },
   {
     id: 4,
     target: 'item-4',
+    offset: 10,
   },
   {
     id: 5,
     target: 'item-5',
+    offset: 10,
   },
   {
     id: 6,
     target: 'item-6',
+    offset: 20,
+  },
+  {
+    id: 7,
+    target: 'item-7',
+    offset: 10,
   },
 ];
 
@@ -58,8 +69,7 @@ class GameScene extends Phaser.Scene {
 
     this.matter.world.update30Hz();
     this.canDrop = true;
-    this.timer = 0;
-    this.timerEvent = null;
+
     this.addSky();
     this.addGround();
     this.addMovingCrate(params);
@@ -87,6 +97,19 @@ class GameScene extends Phaser.Scene {
     this.cameras.main.setBounds(0, 0, this.sys.game.config.width, 0);
     this.cameras.main.startFollow(this.actionCamera, true);
     this.cameras.main.ignore([this.ground, this.movingCrate]);
+
+    // this.pointsText = this.add.text(10, 10, '0', {
+    //   fontFamily: 'Euclid',
+    //   fontSize: '70px',
+    //   fill: '#FFFFFF',
+    // });
+
+    // Phaser.Display.Align.To.TopCenter(
+    //   this.pointsText,
+    //   this.matter.world,
+    //   0,
+    //   20,
+    // );
   }
 
   addGround() {
@@ -98,7 +121,7 @@ class GameScene extends Phaser.Scene {
     this.ground.setBody({
       type: 'rectangle',
       width: this.ground.displayWidth,
-      height: this.ground.displayHeight * 2,
+      height: this.ground.displayHeight + 50,
     });
     this.ground.setOrigin(0.5, 1);
     this.ground.setStatic(true);
@@ -107,7 +130,7 @@ class GameScene extends Phaser.Scene {
   addMovingCrate(params) {
     this.movingCrate = this.add.sprite(
       this.game.config.width / 2 - options.crateRange[0],
-      this.ground.y - this.game.config.height,
+      this.ground.y - this.game.config.height + 200,
       this.item.target,
     );
     this.movingCrate.setOrigin(0.5, 0.5);
@@ -121,6 +144,18 @@ class GameScene extends Phaser.Scene {
     });
   }
 
+  updatePoints() {
+    const cratesCount = this.crateGroup.getChildren().length;
+
+    // this.pointsText.text = cratesCount;
+
+    if (cratesCount >= 15) {
+      setTimeout(() => {
+        EventBus.emit('game-over', true);
+      }, 800);
+    }
+  }
+
   checkCollision(e, b1, b2) {
     if (b1.isCrate && !b1.hit) {
       b1.hit = true;
@@ -128,10 +163,20 @@ class GameScene extends Phaser.Scene {
 
       if (b1.gameObject.texture.key === this.lastCrate?.texture?.key) {
         this.nextCrate();
+        this.updatePoints();
       } else {
         this.crateGroup.getChildren().forEach((item) => {
           item.body.isStatic = false;
         });
+
+        this.actionCamera.centerOn(
+          this.game.config.width / 2,
+          this.game.config.height / 2,
+        );
+
+        setTimeout(() => {
+          EventBus.emit('game-over', false);
+        }, 1500);
       }
     }
     if (b2.isCrate && !b2.hit) {
@@ -143,48 +188,33 @@ class GameScene extends Phaser.Scene {
         b1.gameObject.texture.key === this.lastCrate?.texture?.key
       ) {
         this.nextCrate();
+        this.updatePoints();
       } else {
         this.crateGroup.getChildren().forEach((item) => {
           item.body.isStatic = false;
-
-          this.actionCamera.centerOn(
-            this.game.config.width / 2,
-            this.game.config.height / 2,
-          );
         });
+
+        this.actionCamera.centerOn(
+          this.game.config.width / 2,
+          this.game.config.height / 2,
+        );
+
+        setTimeout(() => {
+          EventBus.emit('game-over', false);
+        }, 1500);
       }
     }
   }
 
   dropCrate() {
     if (this.canDrop) {
-      this.addTimer();
       this.canDrop = false;
       this.movingCrate.visible = false;
 
       this.addFallingCrate();
     }
   }
-  update() {
-    this.crateGroup.getChildren().forEach(function (crate) {
-      if (crate.y > this.game.config.height + crate.displayHeight) {
-        if (!crate.body.hit) {
-          this.nextCrate();
-        }
-        crate.destroy();
-      }
-    }, this);
-  }
-  addTimer() {
-    if (this.timerEvent == null) {
-      this.timerEvent = this.time.addEvent({
-        delay: 1000,
-        callback: this.tick,
-        callbackScope: this,
-        loop: true,
-      });
-    }
-  }
+
   addFallingCrate() {
     let fallingCrate = this.matter.add.sprite(
       this.movingCrate.x,
@@ -194,9 +224,11 @@ class GameScene extends Phaser.Scene {
 
     fallingCrate.body.isCrate = true;
     fallingCrate.body.hit = false;
+
     this.crateGroup.add(fallingCrate);
     this.cameras.main.ignore(fallingCrate);
   }
+
   nextCrate() {
     this.zoomCamera();
     this.canDrop = true;
@@ -207,8 +239,12 @@ class GameScene extends Phaser.Scene {
 
     this.item = getNextItem(this.level, this.item.id);
     this.movingCrate.setTexture(this.item.target);
-    this.movingCrate.y = lastCrate.y - this.game.config.height / 2;
+    this.movingCrate.y =
+      lastCrate.y -
+      this.game.config.height / 2 +
+      this.movingCrate.displayHeight;
   }
+
   zoomCamera() {
     const lastCrate =
       this.crateGroup.getChildren()[this.crateGroup.getChildren().length - 1];
@@ -217,19 +253,6 @@ class GameScene extends Phaser.Scene {
 
     if (lastCrate.y < this.game.config.height / 2) {
       this.actionCamera.centerOn(this.game.config.width / 2, lastCrate.y);
-    }
-  }
-
-  tick() {
-    this.timer++;
-  }
-
-  removeCrate() {
-    if (this.crateGroup.getChildren().length > 0) {
-      this.crateGroup.getFirstAlive().destroy();
-    } else {
-      this.removeEvent.remove();
-      this.scene.start('game');
     }
   }
 }

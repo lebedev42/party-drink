@@ -4,7 +4,7 @@ export const Wrapper = styled.div<{ isGame?: boolean }>`
   position: relative;
   width: 100%;
   height: 100%;
-  background: ${(props) => (props.isGame ? '#ffc46c' : '#ff335f')};
+  background: linear-gradient(180deg, #373234 24.55%, #c57597 150.85%);
   min-height: 100vh;
 `;
 

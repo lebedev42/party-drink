@@ -19,7 +19,7 @@ const GlobalStyle = createGlobalStyle`
     scroll-behavior: smooth;
     margin: 0;
     padding: 0;
-    background: #ff335f;
+    background: linear-gradient(180deg, #373234 24.55%, #c57597 150.85%);
   }
 
   .tp-dfwv {

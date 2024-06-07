@@ -5,13 +5,14 @@ export const Wrapper = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
 
-  @media (max-width: 475px) {
-    gap: 20px;
-  }
-  @media (max-width: 320px) {
-    gap: 15px;
+  width: 100%;
+  height: 100vh;
+
+  padding: 20px;
+
+  @media (max-width: 380px) {
+    padding: 10px;
   }
 `;
 
@@ -22,16 +23,10 @@ export const Container = styled.div`
   position: relative;
 
   width: 100%;
-  height: 100vh;
 
-  padding: 80px 30px 70px;
-
-  @media (max-width: 380px) {
-    padding: 50px 20px 50px;
-  }
-  @media (max-width: 320px) {
-    padding: 40px 10px 40px;
-  }
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 27px;
 `;
 
 export const Content = styled.div`
@@ -42,39 +37,24 @@ export const Content = styled.div`
 `;
 
 export const Image = styled.img`
-  width: 228px;
-  height: 228px;
+  width: 303px;
+  height: 267px;
   object-fit: contain;
 
-  margin-bottom: 30px;
-`;
-
-export const Title = styled.h1`
-  font-family: 'Euclid';
-  font-style: normal;
-  font-weight: 500;
-  font-size: 32px;
-  line-height: 115%;
-  letter-spacing: -0.02em;
-
-  color: #ffffff;
-
-  margin-bottom: 10px;
-
-  @media (max-width: 360px) {
-    font-size: 20px;
-  }
+  margin-bottom: 22px;
 `;
 
 export const SubTitle = styled.h1`
   font-family: 'Euclid';
-  font-style: normal;
-  font-weight: 500;
-  font-size: 24px;
-  line-height: 115%;
-  letter-spacing: -0.02em;
 
-  color: #ffffff;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 25px;
+
+  color: #000000;
+
+  text-align: center;
 
   margin-bottom: 20px;
 
@@ -106,10 +86,10 @@ export const Btn = styled.button<{ typeBtn: 'white' | 'red' }>`
   opacity: 1;
 
   background-color: ${(props) =>
-    props.typeBtn === 'white' ? '#FFFFFF' : '#ff335f'};
-  color: ${(props) => (props.typeBtn === 'white' ? '#FF335F' : '#FFFFFF')};
+    props.typeBtn === 'white' ? '#FFD8EE' : '#ff4fc3'};
+  color: ${(props) => (props.typeBtn === 'white' ? '#3E373A' : '#FFFFFF')};
 
-  border: 1px solid #ffffff;
+  border-radius: 14px;
 
   font-family: 'Euclid';
   font-style: normal;
@@ -119,7 +99,6 @@ export const Btn = styled.button<{ typeBtn: 'white' | 'red' }>`
 
   font-size: 18px;
   padding: 10px 16px;
-  border-radius: 30px;
 
   &:hover {
     cursor: pointer;

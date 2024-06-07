@@ -21,21 +21,21 @@ export const Container = styled.div`
   justify-content: space-between;
   position: relative;
 
-  background-size: contain;
-  background-position: center bottom;
+  background-size: cover;
+  background-position: center center;
   background-repeat: no-repeat;
   background-image: url('/welcome-bg.png');
 
   width: 100%;
   height: 100vh;
 
-  padding: 80px 30px 70px;
+  padding: 80px 30px 140px;
 
   @media (max-width: 380px) {
-    padding: 50px 20px 50px;
+    padding: 50px 20px 100px;
   }
   @media (max-width: 320px) {
-    padding: 40px 10px 40px;
+    padding: 40px 10px 80px;
   }
 `;
 
@@ -74,8 +74,10 @@ export const Btn = styled.button<{ typeBtn: 'white' | 'red' }>`
   opacity: 1;
 
   background-color: ${(props) =>
-    props.typeBtn === 'white' ? '#FFFFFF' : '#ff335f'};
+    props.typeBtn === 'white' ? '#FFFFFF' : '#ff4fc3'};
   color: ${(props) => (props.typeBtn === 'white' ? '#FF335F' : '#FFFFFF')};
+
+  border-radius: 14px;
 
   font-family: 'Euclid';
   font-style: normal;
@@ -85,7 +87,6 @@ export const Btn = styled.button<{ typeBtn: 'white' | 'red' }>`
 
   font-size: 18px;
   padding: 10px 16px;
-  border-radius: 30px;
 
   &:hover {
     cursor: pointer;

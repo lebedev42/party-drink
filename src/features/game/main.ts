@@ -7,12 +7,8 @@ import options from './constants/options';
 const config = {
   type: Phaser.CANVAS,
   parent: 'game-container',
-  // width: 1170,
-  // height: 2532,
   width: 750,
   height: 1334,
-  // backgroundColor: '#FFC46C',
-  // transparent: true,
   scene: [BootScene, LoadingScene, GameScene],
 };
 
@@ -28,10 +24,10 @@ const StartGame = (parent: any, size: any) => {
     physics: {
       default: 'matter',
       matter: {
-        // gravity: {
-        //   y: options.gravity,
-        //   x: 0,
-        // },
+        gravity: {
+          y: options.gravity,
+          x: 0,
+        },
       },
     },
   };

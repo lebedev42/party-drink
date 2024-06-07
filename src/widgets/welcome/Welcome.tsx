@@ -10,7 +10,7 @@ export const Welcome: React.FC<WelcomeProps> = ({ handleStart }) => {
   return (
     <Styled.Container>
       <Styled.Actions>
-        <Styled.Btn typeBtn="white" onClick={() => handleStart()}>
+        <Styled.Btn typeBtn="red" onClick={() => handleStart()}>
           Начать игру
         </Styled.Btn>
       </Styled.Actions>
