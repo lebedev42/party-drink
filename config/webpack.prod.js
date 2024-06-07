@@ -1,7 +1,7 @@
 const { merge } = require('webpack-merge');
 const TerserWebpackPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const CompressionPlugin = require("compression-webpack-plugin");
+const CompressionPlugin = require('compression-webpack-plugin');
 
 const zlib = require('zlib');
 const commonConfig = require('./webpack.common');
@@ -9,7 +9,6 @@ const commonConfig = require('./webpack.common');
 module.exports = merge(commonConfig, {
   mode: 'production',
   entry: './src/index.tsx',
-  devtool: 'source-map',
   performance: {
     hints: false,
     maxEntrypointSize: 512000,
@@ -43,13 +42,13 @@ module.exports = merge(commonConfig, {
     new MiniCssExtractPlugin(),
     new CompressionPlugin({
       test: /\.(js|css|html|svg)$/,
-      algorithm: "gzip",
+      algorithm: 'gzip',
       compressionOptions: { level: 9 },
       threshold: 512,
     }),
     new CompressionPlugin({
       test: /\.(js|css|html|svg)$/,
-      algorithm: "brotliCompress",
+      algorithm: 'brotliCompress',
       compressionOptions: {
         params: {
           [zlib.constants.BROTLI_PARAM_QUALITY]: 11,
